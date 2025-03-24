@@ -1,3 +1,5 @@
+package com.example.library_management.models;
+
 public class User {
     private String userId;
     private String password; //hashed
