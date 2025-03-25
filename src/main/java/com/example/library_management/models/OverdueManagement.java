@@ -1,28 +1,26 @@
 package com.example.library_management.models;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class OverdueManagement {
 
     private static final int MAX_OVERDUE_DAYS = 20;
-    private static final double FINE_PER_DAY = 1.0;
+    private static final double DAILY_FINE_RATE = 1.0;
 
     public static boolean isOverdue(LocalDate returnDate, LocalDate dueDate) {
         return returnDate.isAfter(dueDate);
     }
 
-    public static long getOverdueDays(LocalDate returnDate, LocalDate dueDate) {
-        if (isOverdue(returnDate, dueDate)) {
-            return returnDate.toEpochDay() - dueDate.toEpochDay();
+    public int calculateOverdueDays(LocalDate returnDate, LocalDate dueDate) {
+        if (returnDate.isAfter(dueDate)) {
+            return (int) ChronoUnit.DAYS.between(dueDate, returnDate);
         }
-        return 0; // Not overdue
+        return 0; // No overdue
     }
 
-    public static double calculateFine(long overdueDays) {
-        if (overdueDays > 0) {
-            return overdueDays * FINE_PER_DAY;
-        }
-        return 0; // No fine if not overdue
+    public double calculateFine(int overdueDays) {
+        return overdueDays * DAILY_FINE_RATE;
     }
 
 

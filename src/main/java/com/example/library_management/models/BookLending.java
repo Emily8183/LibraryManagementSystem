@@ -83,13 +83,18 @@ public class BookLending {
 
         this.returnDate = returnDate;
         this.librarian = librarian;
-
-        long overdueDays = overdueManagement.getOverdueDays(returnDate,dueDate);
-
         bookItem.setAvailable(true);
         member.setTotalBooksCheckedOut(member.getTotalBooksCheckedOut() - 1);
 
+        OverdueManagement overdueManagement = new OverdueManagement();
+        int overdueDays = overdueManagement.calculateOverdueDays(returnDate, dueDate);
 
+        if (overdueDays > 0) {
+            double fineAmount = overdueManagement.calculateFine(overdueDays);
+            Fine fine = new Fine(fineAmount);
+            System.out.println("Overdue fine recorded: $" + fineAmount);
+            member.addFine(fine); // Store fine in member's record
+        }
 
         return true;
     };
