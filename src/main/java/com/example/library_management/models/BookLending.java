@@ -17,14 +17,17 @@ public class BookLending {
 
     private LocalDate dueDate;
 
-    public BookLending(int lendingId, Member member, BookItem bookItem, Librarian librarian) {
+    private OverdueManagement overdueManagement;
+
+    public BookLending(int lendingId, Member member, BookItem bookItem, Librarian librarian, LocalDate lendDate, LocalDate dueDate, OverdueManagement overdueManagement) {
         this.lendingId = lendingId;
         this.member = member;
         this.bookItem = bookItem;
         this.librarian = librarian;
-        this.lendDate = null;
+        this.lendDate = lendDate;
         this.returnDate = null;
-        this.dueDate = null;
+        this.dueDate = dueDate;
+        this.overdueManagement = overdueManagement;
     }
 
     //lendingId不需要setter
@@ -69,21 +72,24 @@ public class BookLending {
         this.returnDate = null;
         this.librarian = librarian;
         bookItem.setAvailable(false);
+        bookItem.addLendingHistory(this);
         member.setTotalBooksCheckedOut(member.getTotalBooksCheckedOut() + 1);
+
 
         return true;
     };
 
     public boolean returnBook(LocalDate returnDate, Librarian librarian) {
 
-        LibraryCard libraryCard = member.getLibraryCard();
-
-        if (!libraryCard.isValid()) return false; //librarycard is cancelled, can't return books
-
         this.returnDate = returnDate;
         this.librarian = librarian;
+
+        long overdueDays = overdueManagement.getOverdueDays(returnDate,dueDate);
+
         bookItem.setAvailable(true);
         member.setTotalBooksCheckedOut(member.getTotalBooksCheckedOut() - 1);
+
+
 
         return true;
     };
